@@ -98,7 +98,7 @@ int main(int argc, char* argv[]) {
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
     cudaEventElapsedTime(&t_par_float, start, stop);
-    double t_par = static_cast<double>(t_par_float);
+    double t_par = static_cast<double>(t_par_float) / 1000.0; // Convert from ms to s
     // Calculate speedup and efficiency
     sp = t_seq / t_par;
     ep = sp / num_threads;
