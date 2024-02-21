@@ -44,9 +44,9 @@ int main(int argc, char* argv[]) {
     int num_blocks = 1;
 
     if (argc == 4) {
-        num_steps = atoi(argv[1]);
-        num_threads = atoi(argv[2]);
-        num_blocks = atoi(argv[3]);
+        num_steps = atoi(argv[3]);
+        num_threads = atoi(argv[1]);
+        num_blocks = atoi(argv[2]);
         printf("Using %d threads, %d blocks and %d steps\n", num_threads, num_blocks, num_steps);
     } else if (argc != 1) {
         printf("Wrong number of parameters\n");
