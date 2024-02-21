@@ -31,8 +31,8 @@ __global__ void calculatePi(double step, int num_steps, double* result) {
 }
 
 int main(int argc, char* argv[]) {
-    double t1, t2, t_seq, sp, ep;
-    float t_par_float;
+    double t_seq, sp, ep;
+    float t_seq_float, t_par_float;
 
     // Adjust the number of rectangles, threads, and blocks
     int num_steps = 100000;
@@ -61,15 +61,19 @@ int main(int argc, char* argv[]) {
     // Sequential implementation
     //
     double x, sum = 0.0;
-    t1 = clock();
-    step = 1.0 / (double)num_steps;
+    cudaEvent_t start_seq, stop_seq;
+    cudaEventCreate(&start_seq);
+    cudaEventCreate(&stop_seq);
+    cudaEventRecord(start_seq);
     for (i = 0; i < num_steps; i++) {
         x = (i + 0.5) * step;
         sum = sum + 4.0 / (1.0 + x * x);
     }
     pi = step * sum;
-    t2 = clock();
-    t_seq = (t2 - t1) / (double)CLOCKS_PER_SEC;
+    cudaEventRecord(stop_seq);
+    cudaEventSynchronize(stop_seq);
+    cudaEventElapsedTime(&t_seq_float, start_seq, stop_seq);
+    t_seq = static_cast<double>(t_seq_float) / 1000.0; // Convert from ms to s
 
     printf(" pi_seq = %20.15f\n", pi);
     printf(" time_seq = %20.15f\n", t_seq);
