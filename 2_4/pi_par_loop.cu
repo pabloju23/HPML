@@ -4,20 +4,35 @@
 // CUDA header for handling CUDA events
 #include <cuda_runtime.h>
 
+__device__ double atomicAddDouble(double* address, double val)
+{
+    unsigned long long int* address_as_ull =
+                              (unsigned long long int*)address;
+    unsigned long long int old = *address_as_ull, assumed;
+    do {
+        assumed = old;
+        old = atomicCAS(address_as_ull, assumed,
+                        __double_as_longlong(val +
+                               __longlong_as_double(assumed)));
+    } while (assumed != old);
+    return __longlong_as_double(old);
+}
+
 // CUDA kernel definition
-__global__ void calculatePi(float step, int num_steps, float* result) {
+__global__ void calculatePi(double step, int num_steps, double* result) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    float x;
-    float sum = 0.0;
+    double x;
+    double sum = 0.0;
     for (int i = idx; i < num_steps; i += blockDim.x * gridDim.x) {
         x = (i + 0.5) * step;
         sum += 4.0 / (1.0 + x * x);
     }
-    atomicAdd(result, step * sum); // Use atomic operation to accumulate local result
+    atomicAddDouble(result, step * sum); // Use custom atomic operation to accumulate local result
 }
 
 int main(int argc, char* argv[]) {
-    float t1, t2, t_seq, t_par, sp, ep;
+    double t1, t2, t_seq, sp, ep;
+    float t_par_float;
 
     // Adjust the number of rectangles, threads, and blocks
     int num_steps = 100000;
@@ -40,7 +55,7 @@ int main(int argc, char* argv[]) {
 
     int i;
     double step = 1.0 / (double)num_steps;
-    float pi = 0.0;
+    double pi = 0.0;
 
     //
     // Sequential implementation
@@ -64,8 +79,8 @@ int main(int argc, char* argv[]) {
     //
 
     // Allocate memory for the result on the device
-    float* d_result;
-    cudaMalloc(&d_result, sizeof(float));
+    double* d_result;
+    cudaMalloc(&d_result, sizeof(double));
 
     // Initialize result to 0
     cudaMemset(d_result, 0, sizeof(double));
@@ -82,13 +97,14 @@ int main(int argc, char* argv[]) {
     // Stop timing
     cudaEventRecord(stop);
     cudaEventSynchronize(stop);
-    cudaEventElapsedTime(&t_par, start, stop);
+    cudaEventElapsedTime(&t_par_float, start, stop);
+    double t_par = static_cast<double>(t_par_float);
     // Calculate speedup and efficiency
     sp = t_seq / t_par;
     ep = sp / num_threads;
 
     // Copy result from device to host
-    cudaMemcpy(&pi, d_result, sizeof(float), cudaMemcpyDeviceToHost);
+    cudaMemcpy(&pi, d_result, sizeof(double), cudaMemcpyDeviceToHost);
 
     // Free allocated memory
     cudaFree(d_result);
