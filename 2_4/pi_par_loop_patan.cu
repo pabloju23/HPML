@@ -40,11 +40,11 @@ int main() {
 
     int num_threads_arr[] = {256, 512, 1024};
     int num_steps_arr[] = {10000000, 50000000, 100000000, 500000000};
-    int num_blocks_arr[] = {1, 2, 4, 8, 16, 32};
+    int num_blocks_arr[] = {1, 2, 3, 4, 5};
 
     for (int t = 0; t < 3; t++) {
         for (int s = 0; s < 4; s++) {
-            for (int b = 0; b < 6; b++) {
+            for (int b = 0; b < 5; b++) {
                 int num_threads = num_threads_arr[t];
                 int num_steps = num_steps_arr[s];
                 int num_blocks = num_blocks_arr[b];
