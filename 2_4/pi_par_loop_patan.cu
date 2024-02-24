@@ -51,7 +51,8 @@ int main() {
 
                 printf("Using %d threads, %d blocks and %d steps\n", num_threads, num_blocks, num_steps);
 
-                    /*************************************/
+                    
+    /*************************************/
     /******** Computation of pi **********/
     /*************************************/
 
@@ -114,6 +115,4 @@ int main() {
             }
         }
     }
-
-    return 0;
 }
