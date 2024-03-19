@@ -23,7 +23,8 @@ cdef relu_backward_cython_inner(np.ndarray[np.float32_t, ndim=1] dx,
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    # ...
+    for i in prange(dy.shape[0], nogil=True):
+        dx[i] = dy[i] * mask[i]
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################

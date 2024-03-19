@@ -25,7 +25,13 @@ cdef relu_cython_inner(np.ndarray[np.float32_t, ndim=1] x,
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    # ...
+    for i in prange(x.shape[0], nogil=True):
+        if x[i] > 0:
+            max[i] = x[i]
+            mask[i] = 1
+        else:
+            max[i] = 0
+            mask[i] = 0
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
