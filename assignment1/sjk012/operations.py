@@ -26,8 +26,21 @@ def matmul_naive(a, b, c=None):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    # ...
-    
+    # Get the dimensions of the matrices
+    m = a.shape[0]
+    n = b.shape[1]
+    k = a.shape[1]
+
+    # Create an empty result matrix if c is None
+    if c is None:
+        c = np.zeros((m, n), dtype=a.dtype)
+
+    # Perform matrix multiplication
+    for i in range(m):
+        for j in range(n):
+            for l in range(k):
+                c[i, j] += a[i, l] * b[l, j]
+
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -44,9 +57,9 @@ def matmul_numpy(a, b, c=None):
     # Check the documentation of the numpy library at https://numpy.org/doc/  #
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
-    
-    # ...
-        
+
+    res = np.matmul(a, b)
+
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -95,8 +108,9 @@ def matmul_cblas(lib, a, b, c=None):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     
-    # ...
-    
+     # Call to lib.cblas_sgemm function using the ctypes library
+    lib.cblas_sgemm(order, trans_a, trans_b, m, n, k, ctypes.c_float(alpha), a.ctypes.data_as(ctypes.c_void_p), lda, b.ctypes.data_as(ctypes.c_void_p), ldb, ctypes.c_float(beta), c.ctypes.data_as(ctypes.c_void_p), ldc)
+
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -120,7 +134,7 @@ def matmul_tiled(lib, a, b, c=None, block_size=32):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     
-    # ...
+    lib.tiled_gemm(a.ctypes.data_as(ctypes.c_void_p), b.ctypes.data_as(ctypes.c_void_p), c.ctypes.data_as(ctypes.c_void_p), m, n, k, block_size)
     
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################

@@ -27,8 +27,20 @@ cdef matmul_tiled_cython_inner(np.ndarray[np.float32_t, ndim=2] a,
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    # ...
-    
+    for m_ in range(0, m, block_size):
+            for n_ in range(0, n, block_size):
+                for k_ in range(0, k, block_size):
+                    m_upper = min(m_ + block_size, m)
+                    n_upper = min(n_ + block_size, n)
+                    k_upper = min(k_ + block_size, k)
+                    for i in range(m_, m_upper):
+                        for j in range(n_, n_upper):
+                            temp = 0.0
+                            for l in range(k_, k_upper):
+                                temp += a[i, l] * b[l, j]
+                            c[i, j] += temp
+
+
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
     #                             END OF YOUR CODE                            #

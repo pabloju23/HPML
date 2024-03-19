@@ -27,7 +27,12 @@ def fc_forward(x, w, b):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    # ...
+    # Reshape input
+    N = x.shape[0]
+    x_reshaped = x.reshape(N, -1)
+
+    # Perform matrix multiplication and add bias
+    out = matmul(x_reshaped, w) + b
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -77,7 +82,16 @@ def fc_backward(dy, cache):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    # ...
+    # Reshape input
+    N = x.shape[0]
+    x_reshaped = x.reshape(N, -1)
+
+    # Compute gradients
+    dx = dy @ w.T  # Gradient with respect to x
+    dx = dx.reshape(*x.shape)  # Reshape dx to the shape of x
+    dw = x_reshaped.T @ dy  # Gradient with respect to w
+    db = dy.sum(axis=0)  # Gradient with respect to b
+
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
@@ -103,7 +117,8 @@ def relu_forward_numpy(x):
     ###########################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    # ...
+    y = np.maximum(0, x)
+    mask = x > 0
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
     ###########################################################################
