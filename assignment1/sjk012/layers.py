@@ -231,9 +231,13 @@ def softmax_loss(x, y):
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
     N = x.shape[0]
-    exp_scores = np.exp(x - np.max(x, axis=1, keepdims=True))
+    x = x - np.max(x, axis=1, keepdims=True)  # For numerical stability
+    x = np.clip(x, -700, 700)  # Prevent overflow
+    exp_scores = np.exp(x)
+    #exp_scores = np.exp(x - np.max(x, axis=1, keepdims=True))
     probs = exp_scores / np.sum(exp_scores, axis=1, keepdims=True)
     correct_probs = probs[np.arange(N), y]
+    correct_probs += 1e-12  # add a small constant to avoid taking the log of zero
     loss = -np.sum(np.log(correct_probs)) / N
     
     dx = probs.copy()
